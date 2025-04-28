@@ -1,0 +1,33 @@
+library(pacman)
+library(ggplot2)
+library(tidyverse)
+rec<-c(144,134,185,141,205,126,123,152,123,215,170,165,180,175,160,185,168,172,178,169
+)
+#media_rec<- mean(rec)
+#media_rec
+#var_rec<-var(rec)
+#var_rec
+# Estimación del MSE usando bootstrap
+n_bootstrap <- 1000
+mse_estimate <- bootstrap_mse(rec, n_bootstrap)
+cat("El MSE es", format(mse_estimate, big.mark = ","), "\n")
+
+bootstrap_mse <- function(rec, n_bootstrap) {
+  mse_values <- numeric(n_bootstrap)
+  for (i in 1:n_bootstrap) {
+    sample_data <- sample(rec, replace = TRUE)
+    mse_values[i] <- mean((sample_data - mean(sample_data))^2)
+  }
+  return(mean(mse_values))
+}
+btmse<-bootstrap_mse
+btmse
+# Intervalo de confianza del 95%
+alpha <- 0.05
+des_rec<-sd(rec)/sqrt(length(rec))
+z <- qnorm(1 - alpha / 2)
+ci_lower <-  mse_estimate- z * des_rec
+ci_upper <- mse_estimate + z * des_rec
+ci_lower
+ci_upper
+
